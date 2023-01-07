@@ -1,0 +1,72 @@
+Program -> Main-function Function-list
+
+Function-list -> Function Function-list 
+                | EPSILON
+Function -> Function-initial Function-body
+Function-initial -> Type-specifier ID
+Type-specifier -> VOID 
+                | CHAR 
+                | INT 
+                | FLOAT 
+                
+Function-body -> ( Parameter-list ) { Statement-list } 
+
+Parameter-list -> Parameter Parameter-list 
+                | EPSILON
+Parameter -> Function-initial
+
+Statement-list -> Statement Statement-list 
+                | EPSILON
+Statement -> Declaration-stmt 
+            | Assign-stmt 
+            | Conditional-stmt 
+            | Return-stmt
+
+Declaration-stmt -> Type-specifier ID Declaration-Id 
+Declaration-Id -> ; 
+                | , ID Declaration-Id
+
+Assign-stmt -> ID = Expression ;
+Expression -> Term Term-op
+            | LETTER
+Term -> Factor
+Term-op -> + Expression 
+         | - Expression
+         | EPSILON
+         | * Factor 
+         | / Factor
+Factor -> ID 
+        | NUMBER
+        | DECIMAL 
+        | ( Expression )
+
+Conditional-stmt -> IF ( Condition ) Statement-body Conditional-nest
+Condition -> ID Rel-op Expression Compound-condition
+Compound-condition -> Log-op Condition
+                    | EPSILON
+Rel-op -> <= 
+        | >= 
+        | == 
+        | < 
+        | > 
+        |!=
+Log-op -> && 
+        | ||
+Statement-body -> Statement 
+                | { Statement-list }
+Conditional-nest -> ELSE Condition-body 
+                | EPSILON 
+Condition-body -> Elif-stmt
+                | Else-stmt
+Elif-stmt -> IF ( Condition ) Statement-body ELSE Conditional-nest
+                | EPSILON
+Else-stmt -> Statement-body
+
+Return-stmt -> RETURN Return-type ;
+Return-type -> ID 
+            | NUMBER 
+            | LETTER 
+
+Main-function -> Main-func-initial Function-body
+Main-func-initial -> Type-specifier MAIN
+

@@ -1,0 +1,72 @@
+Program -> Main-function Function-list
+
+Function-list -> Function Function-list 
+                | EPSILON
+Function -> Function-initial Function-body
+Function-initial -> Type-specifier ID
+Type-specifier -> VOID 
+                | CHAR 
+                | INT 
+                | FLOAT 
+                
+Function-body -> ( Parameter-list ) { Statement-list } 
+
+Parameter-list -> Parameter Parameter-list 
+                | EPSILON
+Parameter -> Function-initial
+
+Statement-list -> Statement Statement-list 
+                | EPSILON
+Statement -> Declaration-stmt 
+            | Assign-stmt 
+            | Conditional-stmt 
+            | Return-stmt
+
+Declaration-stmt -> Type-specifier ID Declaration-Id 
+Declaration-Id -> ; 
+                | , ID Declaration-Id
+
+Assign-stmt -> #CG_PUSH_ID ID = Expression #CG_ASSIGN #CG_CLOSE_STMT ;
+Expression -> Term Term-op
+            | #CG_PUSH_CONST LETTER
+Term -> Factor
+Term-op -> #CG_SAVE_OP + Expression #CG_ADDOP
+         | #CG_SAVE_OP - Expression #CG_ADDOP
+         | EPSILON
+         | #CG_SAVE_OP * Factor #CG_MULTOP
+         | #CG_SAVE_OP / Factor #CG_MULTOP
+Factor -> #CG_PUSH_ID ID 
+        | #CG_PUSH_CONST NUMBER
+        | #CG_PUSH_CONST DECIMAL 
+        | ( Expression )
+
+Conditional-stmt -> IF ( Condition ) #CG_SAVE Statement-body Conditional-nest
+Condition -> #CG_PUSH_ID ID #CG_SAVE_OP Rel-op Expression #CG_RELOP Compound-condition
+Compound-condition -> #CG_SAVE_OP Log-op Condition #CG_LOGOP
+                    | EPSILON
+Rel-op -> <= 
+        | >= 
+        | == 
+        | < 
+        | > 
+        |!=
+Log-op -> && 
+        | ||
+Statement-body -> Statement #CG_IF_ELSE
+                | { Statement-list #CG_IF_ELSE }
+Conditional-nest -> ELSE #CG_ELSE Condition-body 
+                | EPSILON 
+Condition-body -> Elif-stmt
+                | Else-stmt
+Elif-stmt -> IF ( Condition ) #CG_SAVE Statement-body ELSE #CG_ELSE Conditional-nest
+                | EPSILON
+Else-stmt -> #CG_ELSE Statement-body
+
+Return-stmt -> RETURN Return-type #CG_RETURN_SEQ_CALLEE;
+Return-type -> ID 
+            | NUMBER 
+            | LETTER 
+
+Main-function -> Main-func-initial Function-body
+Main-func-initial -> Type-specifier MAIN
+

@@ -1,0 +1,71 @@
+// removed include statement from language
+// refactored to line 1
+
+<program> := <include-list> <func-list>
+<include-list> ::= {<include-stmt>}* 
+<include-stmt> ::= # INCLUDE < INCLUDE-ID >
+
+// noted left recurssion here in that func-list was calling itself on left derivations
+// moed main function to be a key part of program rather than function 
+// refactored to line 1 and 2
+
+<func-list> ::= <func> <main-function> 
+                | <func-list> ; <func> <main-function>
+
+// noted need to break down func into two main parts, the initial part and the body
+// initial has the function declaration while the body has the function logic
+// return statement moved to non-terminal statement
+// refactored to lines 3 to 7 and 
+
+<func> ::= <type> FUNC-ID ( {<par-list>}* ) { {<stmt-list>}* RETURN <type> ; }
+                    | <type> FUNC-ID ( {<par-list>}* ) {<dec-list>}* RETURN <type> ; }
+                    | <type> FUNC-ID ( {<par-list>}* ) {<dec-list>}* {<stmt-list>}* RETURN <type> ; }
+
+// refactored to line 6
+
+<type> ::= VOID | CHAR | INT | FLOAT 
+
+// noted left recurssion
+// refactored to lines 9 and 10 
+
+<par-list> ::= <dec-stmt> , | <par-list> <dec-stmt>
+
+//refactored to line 15 and 16
+
+<dec-stmt> ::= <type> {DEC-ID}+ ;
+
+// noted left recurssion
+// refactored to line 12 and 13
+
+<stmt-list> ::= <stmt> | <stmt-list> ; <stmt>
+<stmt> ::= <assign> | <if> |
+
+// removed type in factor as that just didn't make sense ... put the specific types instead e.g. NUM
+// added operator precedence, refer to line 21
+// refactored to line 18 to 21
+
+<assign> ::= DEC-ID = <exp>
+<exp> ::= <term> | <exp> + <term> | <exp> - <term>
+<term> ::= <factor> | <term> * <factor> | <term> / <factor>
+<factor> ::= DEC-ID; | <type> | <exp>
+
+// noted need to break down IF statement to condition statements and other basic statements
+// refactored to lines 23 to 28
+
+<if> ::= IF <cond-list> {<else-if>}* <else> | IF <cond-list>
+<cond-list> ::= <cond-stmt> ; <stmt>
+<cond-stmt> ::= ( DEC-ID <relationalop> <exp> | DEC-ID <relationalop> <exp> <logicalop> DEC-ID <relationalop> <exp> )
+<relationalop> ::= <= | >= | == | < | > |!=
+<logicalop> ::= && | ||
+<else-if> ::= ELSE IF <cond-list>
+<else>  ::= ELSE <stmt>
+
+// refactored to line 16
+
+<dec-list> ::= <dec-stmt> | <dec-list> ; <dec-stmt>
+
+// refactored to line 32 and 33
+
+<main-function> ::=  <type> MAIN ( {<par-list>}* ) { {<stmt-list>}+ RETURN <type> ; }
+                    | <type> MAIN ( {<par-list>}* ) {<dec-list>}+ RETURN <type> ; }
+                    | <type> MAIN ( {<par-list>}* ) {<dec-list>}+ {<stmt-list>}+ RETURN <type> ; }
