@@ -38,7 +38,7 @@ class Scanner(object):
         self.tokens[self.line_number] = []      # access tokens by line number
         self.max_state_size = max_state_size    # how many lines of tokens we want to keep in memory (default: unlimited)
 
-        self.tokens_file = os.path.join(script_dir, "outputs", "Tokens.txt")
+        self.tokens_file = os.path.join(script_dir, "outputs", "tokens.txt")
         self.symbol_file = os.path.join(
             script_dir, "outputs", "symbol_table.txt")
         self.errors_file = os.path.join(
